@@ -44,14 +44,13 @@ namespace BusinessLogic
          * 
          * This Equation is:
          * 
-         * Xn = (Fn * Val) / |(1 - Sum_F)|
+         * Xn = (Fn * Val) / (1 - Sum_F)
          * 
          * Where: 
          *  Xn => Value related to fraction.
          *  Fn => Fration represent weight of Xn in total value.
          *  Val => Value that we start by which.
          *  Sum_F => Summation of all fractions. 
-         *  |(1 - Sum_F)| => Absolute value of (1 - Sum_F).
          *  
          * Note:
          *  According to diviasion  we need to Round it and convert it from double to int.
@@ -62,12 +61,29 @@ namespace BusinessLogic
             List<OutCap> outCaps = new List<OutCap>();
             decimal Sum_F = 0;
 
-            foreach (var inCapItem in inCaps)
-                Sum_F += inCapItem.Participation;
+            try
+            {
+                // calculate summition of fractions.
+                foreach (var inCapItem in inCaps)
+                    Sum_F += inCapItem.Participation;
 
-            foreach (var inCapItem in inCaps)
-                outCaps.Add(new OutCap() { ID = inCapItem.ID, Quantity = (int)Math.Abs(Math.Round((inCapItem.Participation * TotalQty) / (1 - Sum_F))) });
-
+                // check if there is any mathimatical or logical erorrs
+                if (Sum_F < 1 && Sum_F >= 0)
+                {
+                    foreach (var inCapItem in inCaps)
+                        outCaps.Add(new OutCap() { ID = inCapItem.ID, Quantity = (int)Math.Round((inCapItem.Participation * TotalQty) / (1 - Sum_F)) });
+                }
+                else
+                {
+                    Loger.LogWriter($"Please note that Summition of fraction must be less than 1 and greater than or equal zero but in our case it is: {Sum_F}");
+                    foreach (var inCapItem in inCaps)
+                        outCaps.Add(new OutCap() { ID = inCapItem.ID, Quantity = 0 });
+                }                
+            }
+            catch(Exception Ex)
+            {
+                Loger.LogWriter(Ex.ToString());
+            }
             return outCaps;
         }
     }

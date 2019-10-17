@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessLogicClass.cs" />
+    <Compile Include="Loger.cs" />
     <Compile Include="NunitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
